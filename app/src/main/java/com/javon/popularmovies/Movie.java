@@ -1,25 +1,107 @@
 package com.javon.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author Javon Davis
  *         Created by Javon Davis on 16/04/16.
  */
-public class Movie {
+public class Movie implements Parcelable{
 
-    private boolean adult;
-    private String backdrop_path;
-    private int[] genre_ids;
-    private long id;
-    private String original_language;
-    private String original_title;
-    private String overview;
-    private String release_date;
-    private String poster_path;
-    private String title;
-    private int popularity;
-    private boolean video;
-    private float vote_average;
-    private int vote_count;
+    static String KEY = "MOVIE";
+
+    boolean adult;
+    String backdropPath;
+    int[] genreIds;
+    int id;
+    String originalLanguage;
+    String originalTitle;
+    String overview;
+    String releaseDate;
+    String posterPath;
+    String title;
+    int popularity;
+    boolean video;
+    float voteAverage;
+    int voteCount;
+
+    public Movie()
+    {
+        //Default constructor
+    }
+
+    public Movie(Parcel in)
+    {
+        boolean[] booleanData = new boolean[2];
+        String[] stringData = new String[7];
+
+        int genreLength = in.readInt();
+
+        int[] intData = new int[3+genreLength];
+
+        this.voteAverage = in.readFloat();
+
+        in.readBooleanArray(booleanData);
+        in.readStringArray(stringData);
+        in.readIntArray(intData);
+
+        this.adult = booleanData[0];
+        this.video = booleanData[1];
+        this.backdropPath = stringData[0];
+        this.originalLanguage = stringData[1];
+        this.originalTitle = stringData[2];
+        this.overview = stringData[3];
+        this.releaseDate = stringData[4];
+        this.posterPath = stringData[5];
+        this.title = stringData[6];
+        this.id = intData[0];
+        this.popularity = intData[1];
+        this.voteCount = intData[2];
+
+        genreIds = new int[genreLength];
+        System.arraycopy(intData, 3, genreIds, 0, intData.length - 3);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i){
+        boolean[] booleanValues = new boolean[2];
+        booleanValues[0] = adult;
+        booleanValues[1] = video;
+        String[] stringValues = new String[]{backdropPath,originalLanguage,originalTitle,overview,releaseDate,posterPath,title};
+        int[] intValues = new int[3+genreIds.length];
+        intValues[0] = id;
+        intValues[1] = popularity;
+        intValues[2] = voteCount;
+
+        System.arraycopy(genreIds,0,intValues,3,intValues.length-3);
+
+        parcel.writeInt(genreIds.length);
+        parcel.writeFloat(voteAverage);
+        parcel.writeBooleanArray(booleanValues);
+        parcel.writeStringArray(stringValues);
+        parcel.writeIntArray(intValues);
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>(){
+
+        @Override
+        public Movie createFromParcel(Parcel parcel) {
+            return new Movie(parcel);
+        }
+
+        @Override
+        public Movie[] newArray(int i) {
+            return new Movie[i];
+        }
+    };
 
     public boolean isAdult() {
         return adult;
@@ -29,44 +111,44 @@ public class Movie {
         this.adult = adult;
     }
 
-    public String getBackdrop_path() {
-        return backdrop_path;
+    public String getBackdropPath() {
+        return backdropPath;
     }
 
-    public void setBackdrop_path(String backdrop_path) {
-        this.backdrop_path = backdrop_path;
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
     }
 
-    public int[] getGenre_ids() {
-        return genre_ids;
+    public int[] getGenreIds() {
+        return genreIds;
     }
 
-    public void setGenre_ids(int[] genre_ids) {
-        this.genre_ids = genre_ids;
+    public void setGenreIds(int[] genreIds) {
+        this.genreIds = genreIds;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getOriginal_language() {
-        return original_language;
+    public String getOriginalLanguage() {
+        return originalLanguage;
     }
 
-    public void setOriginal_language(String original_language) {
-        this.original_language = original_language;
+    public void setOriginalLanguage(String originalLanguage) {
+        this.originalLanguage = originalLanguage;
     }
 
-    public String getOriginal_title() {
-        return original_title;
+    public String getOriginalTitle() {
+        return originalTitle;
     }
 
-    public void setOriginal_title(String original_title) {
-        this.original_title = original_title;
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
     }
 
     public String getOverview() {
@@ -77,20 +159,20 @@ public class Movie {
         this.overview = overview;
     }
 
-    public String getRelease_date() {
-        return release_date;
+    public String getReleaseDate() {
+        return releaseDate;
     }
 
-    public void setRelease_date(String release_date) {
-        this.release_date = release_date;
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
     }
 
-    public String getPoster_path() {
-        return poster_path;
+    public String getPosterPath() {
+        return posterPath;
     }
 
-    public void setPoster_path(String poster_path) {
-        this.poster_path = poster_path;
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
     }
 
     public String getTitle() {
@@ -117,19 +199,20 @@ public class Movie {
         this.video = video;
     }
 
-    public float getVote_average() {
-        return vote_average;
+    public float getVoteAverage() {
+        return voteAverage;
     }
 
-    public void setVote_average(float vote_average) {
-        this.vote_average = vote_average;
+    public void setVoteAverage(float voteAverage) {
+        this.voteAverage = voteAverage;
     }
 
-    public int getVote_count() {
-        return vote_count;
+    public int getVoteCount() {
+        return voteCount;
     }
 
-    public void setVote_count(int vote_count) {
-        this.vote_count = vote_count;
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
     }
+
 }
