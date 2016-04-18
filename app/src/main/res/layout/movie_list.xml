@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movie_list"
+    android:name="com.javon.popularmovies.MovieListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:stretchMode="columnWidth"
+    android:numColumns="2"
+    tools:context="com.javon.popularmovies.MovieListActivity" />
