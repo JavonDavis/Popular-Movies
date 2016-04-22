@@ -108,71 +108,8 @@ public class MovieDetailFragment extends Fragment {
         }
 
         LinearLayout root = (LinearLayout) rootView.findViewById(R.id.root);
-        new LoadVideosTask(root).execute(movie.getId());
+        new LoadVideosTask(getActivity(),root).execute(movie);
         return rootView;
     }
 
-    private class LoadVideosTask extends AsyncTask<Integer, Void, ArrayList<Video>>
-    {
-        private ViewGroup rootView;
-
-        public LoadVideosTask(ViewGroup root)
-        {
-            rootView = root;
-        }
-
-        @Override
-        protected ArrayList<Video> doInBackground(Integer... values) {
-            String key = getString(R.string.API_KEY);
-            HttpURLConnection urlConnection = null;
-            ArrayList<Video> videos = new ArrayList<>();
-            try {
-                int id = values[0];
-                URL url = new URL("http://api.themoviedb.org/3/movie/"+id+"/videos?api_key="+key);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-
-                Reader reader = new InputStreamReader(in);
-
-                JsonElement jsonElement = new JsonParser().parse(reader);
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-
-                Type listType = new TypeToken<List<Video>>(){}.getType();
-                ArrayList<Video> results = gson.fromJson(jsonObject.get("results"), listType);
-
-                videos.addAll(results);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally{
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-            return videos;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Video> videos) {
-            //movieAdapter.notifyDataSetChanged();
-            if(videos != null)
-            {
-                for(final Video video: videos)
-                {
-                    Button button = new Button(getContext());
-                    button.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                    button.setText(video.getName());
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v="+video.getKey())));
-                        }
-                    });
-                    rootView.addView(button);
-                }
-            }
-        }
-    }
 }

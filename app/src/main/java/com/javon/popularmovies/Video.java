@@ -1,10 +1,13 @@
 package com.javon.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * @author Javon Davis
  *         Created by Javon Davis on 18/04/16.
  */
-public class Video {
+public class Video implements Parcelable {
 
     String id;
     String iso_639_1;
@@ -69,4 +72,42 @@ public class Video {
     public void setSize(int size) {
         this.size = size;
     }
+
+    protected Video(Parcel in) {
+        id = in.readString();
+        iso_639_1 = in.readString();
+        iso_3166_1 = in.readString();
+        key = in.readString();
+        name = in.readString();
+        type = in.readString();
+        size = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(iso_639_1);
+        dest.writeString(iso_3166_1);
+        dest.writeString(key);
+        dest.writeString(name);
+        dest.writeString(type);
+        dest.writeInt(size);
+    }
+
+    public static final Parcelable.Creator<Video> CREATOR = new Parcelable.Creator<Video>() {
+        @Override
+        public Video createFromParcel(Parcel in) {
+            return new Video(in);
+        }
+
+        @Override
+        public Video[] newArray(int size) {
+            return new Video[size];
+        }
+    };
 }

@@ -3,7 +3,7 @@ package com.javon.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
 /**
  * @author Javon Davis
@@ -27,6 +27,8 @@ public class Movie implements Parcelable{
     boolean video;
     float voteAverage;
     int voteCount;
+    List<Video> trailers;
+    List<Review> reviews;
 
     public Movie()
     {
@@ -63,6 +65,8 @@ public class Movie implements Parcelable{
 
         genreIds = new int[genreLength];
         System.arraycopy(intData, 3, genreIds, 0, intData.length - 3);
+        in.readTypedList(trailers,Video.CREATOR);
+        in.readTypedList(reviews, Review.CREATOR);
     }
 
     @Override
@@ -88,6 +92,8 @@ public class Movie implements Parcelable{
         parcel.writeBooleanArray(booleanValues);
         parcel.writeStringArray(stringValues);
         parcel.writeIntArray(intValues);
+        parcel.writeTypedList(trailers);
+        parcel.writeTypedList(reviews);
     }
 
     public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>(){
@@ -215,4 +221,19 @@ public class Movie implements Parcelable{
         this.voteCount = voteCount;
     }
 
+    public List<Video> getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(List<Video> trailers) {
+        this.trailers = trailers;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 }
