@@ -3,6 +3,7 @@ package com.javon.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,8 @@ public class Movie implements Parcelable{
     boolean video;
     float voteAverage;
     int voteCount;
-    List<Video> trailers;
-    List<Review> reviews;
+    List<Video> trailers = new ArrayList<>();
+    List<Review> reviews = new ArrayList<>();
 
     public Movie()
     {

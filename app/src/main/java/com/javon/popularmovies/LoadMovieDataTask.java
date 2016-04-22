@@ -2,12 +2,16 @@ package com.javon.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,16 +31,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * @author Javon Davis
  *         Created by Javon Davis on 22/04/16.
  */
-public class LoadVideosTask extends AsyncTask<Movie, Void, Movie> {
+public class LoadMovieDataTask extends AsyncTask<Movie, Void, Movie> {
 
     private ViewGroup rootView;
     private Context mContext;
 
-    public LoadVideosTask(Context context, ViewGroup root)
+    public LoadMovieDataTask(Context context, ViewGroup root)
     {
         this.mContext = context;
         rootView = root;
@@ -46,7 +53,6 @@ public class LoadVideosTask extends AsyncTask<Movie, Void, Movie> {
     protected Movie doInBackground(Movie... values) {
         String key = mContext.getString(R.string.API_KEY);
         HttpURLConnection urlConnection = null;
-        ArrayList<Video> videos = new ArrayList<>();
         Movie movie = values[0];
         try {
             URL url = new URL("http://api.themoviedb.org/3/movie/"+movie.getId()+"/videos?api_key="+key);
@@ -96,8 +102,14 @@ public class LoadVideosTask extends AsyncTask<Movie, Void, Movie> {
 
         ArrayList<Video> trailers = (ArrayList<Video>) movie.getTrailers();
         ArrayList<Review> reviews = (ArrayList<Review>) movie.getReviews();
-        if(trailers != null)
+        if(trailers != null && !trailers.isEmpty())
         {
+            TextView header = new TextView(mContext);
+            header.setText(R.string.trailers);
+            header.setGravity(Gravity.CENTER);
+            header.setTextSize(18);
+            header.setTypeface(Typeface.DEFAULT_BOLD);
+            rootView.addView(header);
             for(final Video video: trailers)
             {
                 Button button = new Button(mContext);
@@ -110,6 +122,29 @@ public class LoadVideosTask extends AsyncTask<Movie, Void, Movie> {
                     }
                 });
                 rootView.addView(button);
+            }
+        }
+
+        if(reviews != null && !reviews.isEmpty())
+        {
+            TextView header = new TextView(mContext);
+            header.setText(R.string.reviews);
+            header.setGravity(Gravity.CENTER);
+            header.setTextSize(18);
+            header.setTypeface(Typeface.DEFAULT_BOLD);
+            rootView.addView(header);
+            for(Review review:reviews)
+            {
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                View reviewView = inflater.inflate(R.layout.review_item, rootView, false);
+                ButterKnife.bind(mContext,reviewView);
+
+                TextView content = (TextView) reviewView.findViewById(R.id.content);
+                TextView author = (TextView) reviewView.findViewById(R.id.author);
+
+                content.setText(review.getContent());
+                author.setText("Author:"+review.getAuthor());
+                rootView.addView(reviewView);
             }
         }
     }
