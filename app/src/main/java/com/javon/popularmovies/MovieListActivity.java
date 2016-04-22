@@ -34,6 +34,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * An activity representing a list of Movies. This activity
  * has different presentations for handset and tablet-size devices. On
@@ -51,18 +54,18 @@ public class MovieListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     private ArrayList<Movie> movies;
     private MovieAdapter movieAdapter;
+    @Bind(R.id.movie_list) GridView homeGrid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+        ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         assert toolbar != null;
         toolbar.setTitle(getTitle());
-
-        GridView homeGrid = (GridView) findViewById(R.id.movie_list);
 
         movies = new ArrayList<>();
         movieAdapter = new MovieAdapter(this, movies);

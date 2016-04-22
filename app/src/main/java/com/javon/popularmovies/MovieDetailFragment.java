@@ -1,10 +1,8 @@
 package com.javon.popularmovies;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -40,6 +38,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * A fragment representing a single Movie detail screen.
  * This fragment is either contained in a {@link MovieListActivity}
@@ -49,6 +50,11 @@ import java.util.Locale;
 public class MovieDetailFragment extends Fragment {
 
     private Movie movie;
+    @Bind(R.id.title) TextView title;
+    @Bind(R.id.overview) TextView overview;
+    @Bind(R.id.date) TextView dateView;
+    @Bind(R.id.ratingBar) RatingBar rating;
+    @Bind(R.id.movie_poster) ImageView poster;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -73,18 +79,12 @@ public class MovieDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.movie_detail, container, false);
+        ButterKnife.bind(this,rootView);
 
         if (movie != null) {
-            ImageView poster = (ImageView) rootView.findViewById(R.id.movie_poster);
-
             Picasso.with(getContext())
                     .load("http://image.tmdb.org/t/p/w342/" + movie.getPosterPath())
                     .into(poster);
-
-            TextView title = (TextView) rootView.findViewById(R.id.title);
-            TextView overview = ((TextView) rootView.findViewById(R.id.overview));
-            TextView dateView = (TextView) rootView.findViewById(R.id.date);
-            RatingBar rating = (RatingBar) rootView.findViewById(R.id.ratingBar);
 
             try {
                 SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);

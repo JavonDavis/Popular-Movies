@@ -6,5 +6,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:stretchMode="columnWidth"
-    android:numColumns="2"
+    android:numColumns="auto_fit"
     tools:context="com.javon.popularmovies.MovieListActivity" />
