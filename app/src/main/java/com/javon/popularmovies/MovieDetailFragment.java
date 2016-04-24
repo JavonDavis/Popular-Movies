@@ -1,8 +1,14 @@
 package com.javon.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,6 +21,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -46,6 +53,7 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         if (getArguments().containsKey(Movie.KEY)) {
             // Load the dummy content specified by the fragment
@@ -53,6 +61,15 @@ public class MovieDetailFragment extends Fragment {
             // to load content from a content provider.
              movie = getArguments().getParcelable(Movie.KEY);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detail, menu);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_item_share);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -92,4 +109,21 @@ public class MovieDetailFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if(id == R.id.menu_item_share)
+        {
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            ArrayList<Video> trailers = (ArrayList<Video>) movie.getTrailers();
+            if(trailers!= null && !trailers.isEmpty()) {
+                Video trailer = trailers.get(0);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "http://www.youtube.com/watch?v=" + trailer.getKey());
+                startActivity(Intent.createChooser(shareIntent,"Share with..."));
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

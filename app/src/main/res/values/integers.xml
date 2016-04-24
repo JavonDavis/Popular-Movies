@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="grid_poster_height">700</integer>
+    <integer name="heading_size">18</integer>
 </resources>

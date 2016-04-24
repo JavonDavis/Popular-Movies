@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -46,7 +47,7 @@ public class LoadMovieDataTask extends AsyncTask<Movie, Void, Movie> {
     public LoadMovieDataTask(Context context, ViewGroup root)
     {
         this.mContext = context;
-        rootView = root;
+        this.rootView = root;
     }
 
     @Override
@@ -99,7 +100,6 @@ public class LoadMovieDataTask extends AsyncTask<Movie, Void, Movie> {
 
     @Override
     protected void onPostExecute(Movie movie) {
-
         ArrayList<Video> trailers = (ArrayList<Video>) movie.getTrailers();
         ArrayList<Review> reviews = (ArrayList<Review>) movie.getReviews();
         if(trailers != null && !trailers.isEmpty())
@@ -107,7 +107,8 @@ public class LoadMovieDataTask extends AsyncTask<Movie, Void, Movie> {
             TextView header = new TextView(mContext);
             header.setText(R.string.trailers);
             header.setGravity(Gravity.CENTER);
-            header.setTextSize(18);
+            int size = mContext.getResources().getInteger(R.integer.heading_size);
+            header.setTextSize(size);
             header.setTypeface(Typeface.DEFAULT_BOLD);
             rootView.addView(header);
             for(final Video video: trailers)
@@ -130,7 +131,8 @@ public class LoadMovieDataTask extends AsyncTask<Movie, Void, Movie> {
             TextView header = new TextView(mContext);
             header.setText(R.string.reviews);
             header.setGravity(Gravity.CENTER);
-            header.setTextSize(18);
+            int size = mContext.getResources().getInteger(R.integer.heading_size);
+            header.setTextSize(size);
             header.setTypeface(Typeface.DEFAULT_BOLD);
             rootView.addView(header);
             for(Review review:reviews)
