@@ -3,27 +3,20 @@ package com.javon.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.orm.SugarRecord;
+
 /**
  * @author Javon Davis
  *         Created by Javon Davis on 18/04/16.
  */
 public class Video implements Parcelable {
 
-    String id;
     String iso_639_1;
     String iso_3166_1;
     String key;
     String name;
     String type;
     int size;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getIso_639_1() {
         return iso_639_1;
@@ -74,7 +67,6 @@ public class Video implements Parcelable {
     }
 
     protected Video(Parcel in) {
-        id = in.readString();
         iso_639_1 = in.readString();
         iso_3166_1 = in.readString();
         key = in.readString();
@@ -90,7 +82,6 @@ public class Video implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
         dest.writeString(iso_639_1);
         dest.writeString(iso_3166_1);
         dest.writeString(key);

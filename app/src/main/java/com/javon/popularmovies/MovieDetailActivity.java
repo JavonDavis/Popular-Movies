@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso;
  * item details are presented side-by-side with a list of items
  * in a {@link MovieListActivity}.
  */
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity implements MovieDetailFragment.OnFavoritesUpdatedListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,5 +95,10 @@ public class MovieDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFavoritesUpdated() {
+
     }
 }

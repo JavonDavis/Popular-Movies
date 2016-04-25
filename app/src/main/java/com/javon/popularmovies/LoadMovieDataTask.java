@@ -14,18 +14,22 @@ import android.widget.LinearLayout;
 import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.orm.SugarRecord;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;

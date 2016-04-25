@@ -3,6 +3,9 @@ package com.javon.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+import com.orm.SugarRecord;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,14 +13,14 @@ import java.util.List;
  * @author Javon Davis
  *         Created by Javon Davis on 16/04/16.
  */
-public class Movie implements Parcelable{
+public class Movie extends SugarRecord implements Parcelable{
 
     static String KEY = "MOVIE";
 
     boolean adult;
     String backdropPath;
-    int[] genreIds;
-    int id;
+
+    //transient int movieId;
     String originalLanguage;
     String originalTitle;
     String overview;
@@ -41,9 +44,7 @@ public class Movie implements Parcelable{
         boolean[] booleanData = new boolean[2];
         String[] stringData = new String[7];
 
-        int genreLength = in.readInt();
-
-        int[] intData = new int[3+genreLength];
+        int[] intData = new int[3];
 
         this.voteAverage = in.readFloat();
 
@@ -60,12 +61,10 @@ public class Movie implements Parcelable{
         this.releaseDate = stringData[4];
         this.posterPath = stringData[5];
         this.title = stringData[6];
-        this.id = intData[0];
+        super.setId((long) intData[0]);
         this.popularity = intData[1];
         this.voteCount = intData[2];
 
-        genreIds = new int[genreLength];
-        System.arraycopy(intData, 3, genreIds, 0, intData.length - 3);
         in.readTypedList(trailers,Video.CREATOR);
         in.readTypedList(reviews, Review.CREATOR);
     }
@@ -81,14 +80,11 @@ public class Movie implements Parcelable{
         booleanValues[0] = adult;
         booleanValues[1] = video;
         String[] stringValues = new String[]{backdropPath,originalLanguage,originalTitle,overview,releaseDate,posterPath,title};
-        int[] intValues = new int[3+genreIds.length];
-        intValues[0] = id;
+        int[] intValues = new int[3];
+        intValues[0] = getId().intValue();
         intValues[1] = popularity;
         intValues[2] = voteCount;
 
-        System.arraycopy(genreIds,0,intValues,3,intValues.length-3);
-
-        parcel.writeInt(genreIds.length);
         parcel.writeFloat(voteAverage);
         parcel.writeBooleanArray(booleanValues);
         parcel.writeStringArray(stringValues);
@@ -124,22 +120,6 @@ public class Movie implements Parcelable{
 
     public void setBackdropPath(String backdropPath) {
         this.backdropPath = backdropPath;
-    }
-
-    public int[] getGenreIds() {
-        return genreIds;
-    }
-
-    public void setGenreIds(int[] genreIds) {
-        this.genreIds = genreIds;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getOriginalLanguage() {

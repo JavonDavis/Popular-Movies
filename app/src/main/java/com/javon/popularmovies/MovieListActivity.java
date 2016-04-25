@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -45,7 +47,7 @@ import butterknife.ButterKnife;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class MovieListActivity extends AppCompatActivity {
+public class MovieListActivity extends AppCompatActivity implements MovieDetailFragment.OnFavoritesUpdatedListener{
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -54,6 +56,7 @@ public class MovieListActivity extends AppCompatActivity {
     private boolean mTwoPane;
     private ArrayList<Movie> movies;
     private MovieAdapter movieAdapter;
+    private boolean update = true;
     @Bind(R.id.movie_list) GridView homeGrid;
 
     @Override
@@ -90,6 +93,7 @@ public class MovieListActivity extends AppCompatActivity {
         }
 
         new UpdateMovieTask().execute();
+        update = false;
     }
 
     @Override
@@ -107,6 +111,23 @@ public class MovieListActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu_main, menu);
         return true;
     }
+
+    private void checkIfLocal()
+    {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MovieListActivity.this);
+
+        String order = sharedPref.getString("order",getString(R.string.order_popular));
+
+        if(order.equals(getString(R.string.order_favorites)) && update)
+            new UpdateMovieTask().execute();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkIfLocal();
+    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -131,11 +152,17 @@ public class MovieListActivity extends AppCompatActivity {
                     .replace(R.id.movie_detail_container, fragment)
                     .commit();
         } else {
+            update = true;
             Intent intent = new Intent(this, MovieDetailActivity.class);
             intent.putExtra(Movie.KEY, movie);
 
             startActivity(intent);
         }
+    }
+
+    @Override
+    public void onFavoritesUpdated() {
+        checkIfLocal();
     }
 
     private class UpdateMovieTask extends AsyncTask<Void, Void, Void>
@@ -148,30 +175,51 @@ public class MovieListActivity extends AppCompatActivity {
             try {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MovieListActivity.this);
 
-                String order = sharedPref.getString("order",getString(R.string.order_popular));
+                String order = getString(R.string.order_popular);
+                if(sharedPref.contains("order"))
+                    order = sharedPref.getString("order",getString(R.string.order_popular));
+                else
+                {
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("order", order);
+                    editor.apply();
+                }
 
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("order",order);
-                editor.commit();
+                if(!order.equals(getString(R.string.order_favorites))) {
 
-                URL url = new URL("http://api.themoviedb.org/3"+order+"?api_key="+key);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                    URL url = new URL("http://api.themoviedb.org/3" + order + "?api_key=" + key);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
 
-                Reader reader = new InputStreamReader(in);
+                    Reader reader = new InputStreamReader(in);
 
-                JsonElement jsonElement = new JsonParser().parse(reader);
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
+                    JsonElement jsonElement = new JsonParser().parse(reader);
+                    JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
-                Gson gson = gsonBuilder.create();
+                    GsonBuilder gsonBuilder = new GsonBuilder();//.excludeFieldsWithModifiers(Modifier.PRIVATE);
+                    gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);
+                    Gson gson = gsonBuilder.create();
 
-                Type listType = new TypeToken<List<Movie>>(){}.getType();
-                movies.clear();
-                ArrayList<Movie> results = gson.fromJson(jsonObject.get("results"), listType);
+                    Type listType = new TypeToken<List<Movie>>() {
+                    }.getType();
+                    movies.clear();
 
-                movies.addAll(results);
+                    //JsonArray jsonArray = jsonObject.getAsJsonArray("results");
+                    ArrayList<Movie> results = gson.fromJson(jsonObject.get("results"), listType);
+
+                    movies.addAll(results);
+                }
+                else
+                {
+                    movies.clear();
+                    List<Movie> results = Movie.listAll(Movie.class);
+                    movies.addAll(results);
+                }
+//                for(int i =0; i< jsonArray.size(); i++)
+//                {
+//                    JsonObject object = (JsonObject) jsonArray.get(i);
+//                    movies.get(i).setMovieId(object.getAsJsonPrimitive("id").getAsInt());
+//                }
             } catch (IOException e) {
                 e.printStackTrace();
             } finally{

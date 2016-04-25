@@ -3,23 +3,16 @@ package com.javon.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.orm.SugarRecord;
+
 /**
  * @author Javon Davis
  *         Created by Javon Davis on 22/04/16.
  */
 public class Review implements Parcelable {
 
-    String id;
     String author;
     String content;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getAuthor() {
         return author;
@@ -38,7 +31,6 @@ public class Review implements Parcelable {
     }
 
     protected Review(Parcel in) {
-        id = in.readString();
         author = in.readString();
         content = in.readString();
     }
@@ -50,7 +42,6 @@ public class Review implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
         dest.writeString(author);
         dest.writeString(content);
     }
